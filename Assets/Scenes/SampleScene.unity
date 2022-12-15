@@ -398,8 +398,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EventMask:
     serializedVersion: 2
-    m_Bits: 4294967295
-  m_MaxRayIntersections: 0
+    m_Bits: 96
+  m_MaxRayIntersections: 1
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,6 +825,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 129964d06565d0e4db4f700813545f10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _player: 0
 --- !u!1 &1661666883 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6593881707524305565, guid: 70ee9fda00431904ebef3fc3b93a262c,
@@ -978,6 +979,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6593881707524305562, guid: 70ee9fda00431904ebef3fc3b93a262c,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.41657
+      objectReference: {fileID: 0}
+    - target: {fileID: 6593881707524305562, guid: 70ee9fda00431904ebef3fc3b93a262c,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.41657
+      objectReference: {fileID: 0}
+    - target: {fileID: 6593881707524305562, guid: 70ee9fda00431904ebef3fc3b93a262c,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.41657
+      objectReference: {fileID: 0}
+    - target: {fileID: 6593881707524305562, guid: 70ee9fda00431904ebef3fc3b93a262c,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1019,7 +1035,7 @@ PrefabInstance:
     - target: {fileID: 6593881707524305562, guid: 70ee9fda00431904ebef3fc3b93a262c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -269.1625
+      value: -165
       objectReference: {fileID: 0}
     - target: {fileID: 6593881707524305562, guid: 70ee9fda00431904ebef3fc3b93a262c,
         type: 3}

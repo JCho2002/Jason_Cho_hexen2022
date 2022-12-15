@@ -86,10 +86,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6593881707524305565}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86cfd642b2319254aabce3234838586a, type: 3}
+  m_Script: {fileID: 11500000, guid: 88e43d5e916827241b906c9b24fde683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _UIMask:
     serializedVersion: 2
     m_Bits: 32
   _TileMask: 6
+  _type: 0

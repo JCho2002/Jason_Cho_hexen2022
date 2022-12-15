@@ -16,6 +16,18 @@ public class PieceMovedEventArgs : EventArgs
     }
 }
 
+public class PieceTakenEventArgs : EventArgs
+{
+    public PieceView Piece { get; }
+    public Position FromPosition { get; }
+
+    public PieceTakenEventArgs(PieceView piece, Position fromPosition)
+    {
+        Piece = piece;
+        FromPosition = fromPosition;
+    }
+}
+
 public class PiecePlacedEventArgs : EventArgs
 {
     public PieceView Piece { get; }
@@ -28,27 +40,30 @@ public class PiecePlacedEventArgs : EventArgs
     }
 }
 
-public class Board
+public class Board : MonoBehaviour
 {
     public event EventHandler<PieceMovedEventArgs> PieceMoved;
+    public event EventHandler<PieceTakenEventArgs> PieceTaken;
     public event EventHandler<PiecePlacedEventArgs> PiecePlaced;
 
     private Dictionary<Position, PieceView> _pieces = new Dictionary<Position, PieceView>();
 
-    private readonly int _rows;
-    private readonly int _columns;
+    private readonly int _radius;
+    private readonly BoardView _boardView;
 
-    public Board(int row, int columns)
+    public Board(int radius)
     {
-        _rows = row;
-        _columns = columns;
+        _radius = radius;
+        _boardView = FindObjectOfType<BoardView>();
     }
+
+    public BoardView BoardView => _boardView;
 
     public bool TryGetPieceAt(Position position, out PieceView piece)
         => _pieces.TryGetValue(position, out piece);
 
     public bool IsValid(Position position)
-        => (-3 <= position.Q && position.Q < _columns) && (-3 <= position.R && position.R < _rows);
+        => (-_radius < position.Q && position.Q < _radius) && (-_radius < position.R && position.R < _radius);
 
 
     public bool Move(Position fromPosition, Position toPosition)
@@ -66,6 +81,24 @@ public class Board
         _pieces[toPosition] = piece;
 
         OnPiecedMoved(new PieceMovedEventArgs(piece, fromPosition, toPosition));
+
+        return true;
+    }
+
+    public bool Take(Position fromPosition)
+    {
+        if (!IsValid(fromPosition))
+            return false;
+
+        if (!_pieces.ContainsKey(fromPosition))
+            return false;
+
+        if (!_pieces.TryGetValue(fromPosition, out var piece))
+            return false;
+
+        _pieces.Remove(fromPosition);
+
+        OnPieceTaken(new PieceTakenEventArgs(piece, fromPosition));
 
         return true;
     }
@@ -92,6 +125,12 @@ public class Board
     protected virtual void OnPiecedMoved(PieceMovedEventArgs eventArgs)
     {
         var handler = PieceMoved;
+        handler?.Invoke(this, eventArgs);
+    }
+
+    protected virtual void OnPieceTaken(PieceTakenEventArgs eventArgs)
+    {
+        var handler = PieceTaken;
         handler?.Invoke(this, eventArgs);
     }
 

@@ -6,8 +6,7 @@ public static class PositionHelper
 {
     public const float DiagonalTileSize = 1.75f;
     public const float VerticalTileSize = 3f;
-    public const int QTileColumn = 3;
-    public const int RTileColumn = 3;
+    public const int HexRadius = 3;
 
     public static Position GridPosition(Vector3 worldPosition)
     {

@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class PieceView : MonoBehaviour
 {
+    [SerializeField]
+    private Player _player;
 
     public Vector3 WorldPosition => transform.position;
+
+    public Player Player => _player;
 
     internal void MoveTo(Vector3 worldPosition)
     {

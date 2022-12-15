@@ -17,14 +17,56 @@ public class PositionEventArgs : EventArgs
 
 public class BoardView : MonoBehaviour
 {
-    public event EventHandler<PositionEventArgs> PositionClicked;
+    public event EventHandler<PositionEventArgs> PointerEnter;
+    public event EventHandler<PositionEventArgs> PointerExit;
 
-    internal void ChildClicked(PositionView positionView)
-    => OnPositionClicked(new PositionEventArgs(positionView.HexGridPosition));
+    private Dictionary<Position, HexTileView> _hexTileViews = new Dictionary<Position, HexTileView>();
 
-    protected virtual void OnPositionClicked(PositionEventArgs e)
+    private List<Position> _activePosition = new List<Position>();
+
+    public Dictionary<Position, HexTileView> HexTileViews => _hexTileViews;
+
+    public List<Position> ActivePosition
     {
-        var handler = PositionClicked;
-        handler.Invoke(this, e);
+        set
+        {
+            foreach (var position in _activePosition)
+                _hexTileViews[position].Deactivate();
+
+            if (value == null)
+                _activePosition.Clear();
+            else
+                _activePosition = value;
+
+            foreach (var position in _activePosition)
+                _hexTileViews[position].Activate();
+        }
+    }
+
+    private void OnEnable()
+    {
+        var hexViews = GetComponentsInChildren<HexTileView>();
+        foreach (var hexView in hexViews)
+        {
+            _hexTileViews.Add(hexView.HexGridPosition, hexView);
+        }
+    }
+
+    internal void ChildEntered(HexTileView positionView)
+        => OnPointerEnter(new PositionEventArgs(positionView.HexGridPosition));
+
+    internal void ChildExited(HexTileView positionView)
+    => OnPointerExit(new PositionEventArgs(positionView.HexGridPosition));
+
+    protected virtual void OnPointerEnter(PositionEventArgs e)
+    {
+        var handler = PointerEnter;
+        handler?.Invoke(this, e);
+    }
+
+    protected virtual void OnPointerExit(PositionEventArgs e)
+    {
+        var handler = PointerExit;
+        handler?.Invoke(this, e);
     }
 }
