@@ -11,7 +11,7 @@ internal abstract class CardMoveset : IMoveSet
         _board = board;
     }
 
-    public abstract List<Position> Positions(Position fromPosition);
+    public abstract List<Position> Positions(Position playerPosition, Position hoverPosition);
 
 
     public virtual bool Execute(Position fromPosition, Position toPosition)

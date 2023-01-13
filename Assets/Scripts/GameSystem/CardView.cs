@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     [SerializeField]
     private LayerMask _UIMask;
@@ -33,7 +34,6 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     {
         transform.position = eventData.position;
     }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (_child != null)
@@ -42,25 +42,32 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         _gameLoop.CardSelected(this);
 
         _child = Instantiate(this.gameObject, this.transform.parent);
-        Destroy(_child.GetComponent<Card>());
+        this.GetComponent<Image>().raycastTarget = false;
+        Destroy(_child.GetComponent<CardView>());
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        this.GetComponent<Image>().raycastTarget = true;
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            if (hit.transform.gameObject.layer == _TileMask)
+        if (Physics.Raycast(ray, out var hit)) {
+            if (hit.transform.gameObject.layer == _TileMask && _gameLoop.CardLetGo(hit.transform.gameObject.GetComponent<HexTileView>(), this))
             {
-                _gameLoop.CardLetGo(hit.transform.gameObject.GetComponent<HexTileView>(), this);
-                _cardPositioner.DestroyCard(transform.parent.gameObject);
+                DestroyClone();
+                _cardPositioner.DestroyCard(this.gameObject);
             }
-        }
-        else
-        {
-            transform.position = _startingPos;
-            Destroy(_child);
-        }
+            else
+                DestroyClone();
+        } else
+            DestroyClone();
+    }
+
+    private void DestroyClone()
+    {
+        _gameLoop.ClearCurrentCard();
+        transform.position = _startingPos;
+        Destroy(_child);
     }
 }

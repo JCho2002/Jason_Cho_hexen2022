@@ -6,9 +6,9 @@ using UnityEngine.Assertions;
 
 public class CardEventArgs : EventArgs
 {
-    public Card Card { get; }
+    public CardView Card { get; }
 
-    public CardEventArgs(Card card)
+    public CardEventArgs(CardView card)
     {
         Card = card;
     }
@@ -18,9 +18,9 @@ public class PositionCardEventArgs : EventArgs
 {
     public Position Position { get; }
 
-    public Card Card { get; }
+    public CardView Card { get; }
 
-    public PositionCardEventArgs(Position position, Card card)
+    public PositionCardEventArgs(Position position, CardView card)
     {
         Position = position;
         Card = card;
@@ -29,14 +29,14 @@ public class PositionCardEventArgs : EventArgs
 
 public class GameLoop : MonoBehaviour
 {
-    public event EventHandler<CardEventArgs> CardClicked;
-    public event EventHandler<PositionCardEventArgs> CardDropped;
+    //public event EventHandler<CardEventArgs> CardClicked;
+    //public event EventHandler<PositionCardEventArgs> CardDropped;
 
     private Board _board;
     private PieceView _player;
     private Engine _engine;
     private BoardView _boardView;
-    private Card _currentCard;
+    private CardView _currentCard;
 
     private void Start()
     {
@@ -45,9 +45,16 @@ public class GameLoop : MonoBehaviour
         _board.PieceMoved += (s, e)
             => e.Piece.MoveTo(PositionHelper.WorldPosition(e.ToPosition));
 
-        _player = FindObjectOfType<PieceView>();
+        _board.PieceTaken += (s, e)
+            => e.Piece.Taken();
 
-        _board.Place(PositionHelper.GridPosition(_player.WorldPosition), _player);
+        var pieces = FindObjectsOfType<PieceView>();
+        foreach(var piece in pieces)
+        {
+            _board.Place(PositionHelper.GridPosition(piece.WorldPosition), piece);
+            if (piece.Player == Player.Player)
+                _player = piece;
+        }
 
         _engine = new Engine(_board);
 
@@ -56,21 +63,28 @@ public class GameLoop : MonoBehaviour
         _boardView.PointerExit += OnPointerExit;
     }
 
-    internal void CardSelected(Card card)
+    internal void CardSelected(CardView card)
         => OnCardClicked(new CardEventArgs(card));
 
-    internal void CardLetGo(HexTileView tile, Card card)
-    => OnCardDropped(new PositionCardEventArgs(tile.HexGridPosition ,card));
+    internal bool CardLetGo(HexTileView tile, CardView card)
+    => OnCardDropped(new PositionCardEventArgs(tile.HexGridPosition, card));
+
+    internal void CardHoveredOverTile(HexTileView tile)
+        => OnPointerEnter(this, new PositionEventArgs(tile.HexGridPosition));
 
     private void OnPointerEnter(object sender, PositionEventArgs e)
     {
         if (_currentCard == null)
             return;
+
+        IMoveSet moveSet = _engine.MoveSets.For(_currentCard.Type);
+        List<Position> validPositions = moveSet.Positions(PositionHelper.GridPosition(_player.WorldPosition), e.Position);
+        _boardView.ActivePosition = validPositions;
     }
 
     private void OnPointerExit(object sender, PositionEventArgs e)
     {
-
+        _boardView.ActivePosition = new List<Position>(0);
     }
 
     private void OnCardClicked(CardEventArgs e)
@@ -79,18 +93,25 @@ public class GameLoop : MonoBehaviour
             _currentCard = null;
 
         _currentCard = e.Card;
-
-        IMoveSet moveSet = _engine.MoveSets.For(_currentCard.Type);
-        List<Position> validPositions = moveSet.Positions(PositionHelper.GridPosition(_player.WorldPosition));
-
-        _boardView.ActivePosition = validPositions;
     }
 
-    private void OnCardDropped(PositionCardEventArgs e)
+    private bool OnCardDropped(PositionCardEventArgs e)
     {
-        Debug.Log("Card Dropped");
-        var toPosition = e.Position;
+        _boardView.ActivePosition = new List<Position>(0);
 
-        _engine.Move(PositionHelper.GridPosition(_player.WorldPosition), toPosition);
+        var hoverPosition = e.Position;
+
+        if (!_engine.Action(PositionHelper.GridPosition(_player.WorldPosition), hoverPosition, _currentCard.Type))
+        {
+            ClearCurrentCard();
+            return false;
+        }
+
+        ClearCurrentCard();
+        return true;
+
     }
+
+    internal void ClearCurrentCard()
+        => _currentCard = null;
 }

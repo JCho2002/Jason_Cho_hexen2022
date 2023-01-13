@@ -5,7 +5,6 @@ using UnityEngine;
 
 internal class MoveSetHelper
 {
-    private PieceView _currentPiece;
     private readonly Position _currentHexPosition;
     private Board _board;
     private List<Position> _positions = new List<Position>();
@@ -14,9 +13,6 @@ internal class MoveSetHelper
     {
         _currentHexPosition = position;
         _board = board;
-
-        if (!_board.TryGetPieceAt(_currentHexPosition, out _currentPiece))
-            Debug.Log($"Passed in a position {_currentHexPosition} which contains no piece to {nameof(MoveSetHelper)}.");
     }
 
     public MoveSetHelper UpLeft(int maxSteps = int.MaxValue, params Validator[] condition)
@@ -41,8 +37,6 @@ internal class MoveSetHelper
 
     public MoveSetHelper Collect(Vector2Int direction, int maxSteps = int.MaxValue, params Validator[] condition)
     {
-        if (_currentPiece == null)
-            return this;
 
         var currentStep = 0;
         var position = new Position(_currentHexPosition.Q + direction.x, _currentHexPosition.R + direction.y);
@@ -52,14 +46,6 @@ internal class MoveSetHelper
             && (condition == null || condition.All((v) => v(_currentHexPosition, _board, position)))
             )
         {
-            if (_board.TryGetPieceAt(position, out var piece))
-            {
-                if (piece.Player != _currentPiece.Player)
-                    _positions.Add(position);
-
-                break;
-            }
-
             _positions.Add(position);
 
             position = new Position(position.Q + direction.x, position.R + direction.y);

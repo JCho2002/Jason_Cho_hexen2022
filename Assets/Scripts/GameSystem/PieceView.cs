@@ -16,6 +16,11 @@ public class PieceView : MonoBehaviour
         transform.position = worldPosition;
     }
 
+    internal void Taken()
+    {
+        gameObject.SetActive(false);
+    }
+
     internal void Placed(Vector3 worldPosition)
     {
         transform.position = worldPosition;

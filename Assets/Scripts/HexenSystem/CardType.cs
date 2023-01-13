@@ -1,4 +1,4 @@
 public enum CardType
 {
-    Teleport, Push, Swipe
+    Teleport, Push, Swipe, Line
 }

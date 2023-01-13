@@ -23,7 +23,7 @@ public class HexTileView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public Position HexGridPosition => PositionHelper.GridPosition(transform.position);
 
     private void Start()
-   => _parent = GetComponentInParent<BoardView>();
+        => _parent = GetComponentInParent<BoardView>();
 
     public void OnPointerEnter(PointerEventData eventData)
         => _parent.ChildEntered(this);

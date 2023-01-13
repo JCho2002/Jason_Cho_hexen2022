@@ -10,6 +10,9 @@ public class MoveSetCollector : MonoBehaviour
     public MoveSetCollector(Board board)
     {
         _moveSets.Add(CardType.Teleport, new TeleportCard(board));
+        _moveSets.Add(CardType.Swipe, new SwipeCard(board));
+        _moveSets.Add(CardType.Line, new LineCard(board));
+        _moveSets.Add(CardType.Push, new PushCard(board));
 
         _board = board;
     }

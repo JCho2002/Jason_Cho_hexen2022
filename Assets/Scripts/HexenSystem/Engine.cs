@@ -16,24 +16,23 @@ public class Engine
     public MoveSetCollector MoveSets
         => _moveSetCollection;
 
-    public bool Move(Position fromPosition, Position toPosition)
+    public bool Action(Position playerPosition, Position hoverPosition, CardType card)
     {
-        if (!_board.IsValid(fromPosition))
+        if (!_board.IsValid(playerPosition))
             return false;
 
-        if (!_board.IsValid(toPosition))
+        if (!_board.IsValid(hoverPosition))
             return false;
 
-        if (!_board.TryGetPieceAt(fromPosition, out var piece))
+        if (playerPosition.Equals(hoverPosition))
             return false;
 
-        //Fix this Later so that it can track the current card
-        if (!MoveSets.TryGetMoveSet(CardType.Teleport, out var moveSet))
+        if (!MoveSets.TryGetMoveSet(card, out var moveSet))
             return false;
 
-        if (!moveSet.Positions(fromPosition).Contains(toPosition))
+        if (!moveSet.Positions(playerPosition, hoverPosition).Contains(hoverPosition))
             return false;
 
-        return moveSet.Execute(fromPosition, toPosition);
+        return moveSet.Execute(playerPosition, hoverPosition);
     }
 }
