@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
-/*
 public class CardEventArgs : EventArgs
 {
     public CardView Card { get; }
@@ -27,34 +25,37 @@ public class PositionCardEventArgs : EventArgs
         Card = card;
     }
 }
-*/
 
-public class GameLoop : MonoBehaviour
+public class PlayingState : State
 {
-    private StateMachine _stateMachine;
-
-    public StateMachine StateMachine => _stateMachine;
-
-    private void Start()
-    {
-        _stateMachine = new StateMachine();
-        _stateMachine.Register(States.Menu, new MenuState());
-        _stateMachine.Register(States.Playing, new PlayingState());
-
-        _stateMachine.InitialState = States.Menu;
-    }
-}
-
-    /*
-
     private Board _board;
     private PieceView _player;
     private Engine _engine;
     private BoardView _boardView;
     private CardView _currentCard;
 
-    private void Start()
+    private void InitializeScene(AsyncOperation obj)
     {
+        _boardView = GameObject.FindObjectOfType<BoardView>();
+        if (_boardView != null)
+        {
+            _boardView.PointerEnter += OnPointerEnter;
+            _boardView.PointerExit += OnPointerExit;
+        }
+
+        var pieceViews = GameObject.FindObjectsOfType<PieceView>();
+        foreach(var pieceView in pieceViews)
+        {
+            _board.Place(PositionHelper.GridPosition(pieceView.WorldPosition), pieceView);
+            if (pieceView.Player == Player.Player)
+                _player = pieceView;
+        }
+    }
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
         _board = new Board(PositionHelper.HexRadius);
 
         _board.PieceMoved += (s, e)
@@ -63,29 +64,51 @@ public class GameLoop : MonoBehaviour
         _board.PieceTaken += (s, e)
             => e.Piece.Taken();
 
-        var pieces = FindObjectsOfType<PieceView>();
-        foreach(var piece in pieces)
-        {
-            _board.Place(PositionHelper.GridPosition(piece.WorldPosition), piece);
-            if (piece.Player == Player.Player)
-                _player = piece;
-        }
-
         _engine = new Engine(_board);
 
-        _boardView = FindObjectOfType<BoardView>();
-        _boardView.PointerEnter += OnPointerEnter;
-        _boardView.PointerExit += OnPointerExit;
+        var op = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
+        op.completed += InitializeScene;
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        if (_boardView != null)
+        {
+            _boardView.PointerEnter -= OnPointerEnter;
+            _boardView.PointerExit -= OnPointerExit;
+        }
+
+        SceneManager.UnloadSceneAsync("Game");
+    }
+
+    public override void OnSuspend()
+    {
+       if (_boardView != null)
+        {
+            _boardView.PointerEnter -= OnPointerEnter;
+            _boardView.PointerExit -= OnPointerExit;
+        }
+    }
+
+    public override void OnResume()
+    {
+        if (_boardView != null)
+        {
+            _boardView.PointerEnter += OnPointerEnter;
+            _boardView.PointerExit += OnPointerExit;
+        }
     }
 
     internal void CardSelected(CardView card)
-        => OnCardClicked(new CardEventArgs(card));
+    => OnCardClicked(new CardEventArgs(card));
 
     internal bool CardLetGo(HexTileView tile, CardView card)
     => OnCardDropped(new PositionCardEventArgs(tile.HexGridPosition, card));
 
-    internal void CardHoveredOverTile(HexTileView tile)
+    /*internal void CardHoveredOverTile(HexTileView tile)
         => OnPointerEnter(this, new PositionEventArgs(tile.HexGridPosition));
+    */
 
     private void OnPointerEnter(object sender, PositionEventArgs e)
     {
@@ -130,4 +153,3 @@ public class GameLoop : MonoBehaviour
     internal void ClearCurrentCard()
         => _currentCard = null;
 }
-    */

@@ -68,6 +68,11 @@ public class CardPositioner : MonoBehaviour
         if (baseCards.Count >= baseDeckSize)
             DisplayCard(baseDeckSize);
         else
+        {
             DisplayCard(baseCards.Count);
+
+            foreach (var c in baseCards)
+                c.GetComponent<CardView>().StartingPos = c.transform.position;
+        }
     }
 }
