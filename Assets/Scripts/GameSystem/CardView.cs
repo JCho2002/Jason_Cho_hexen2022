@@ -41,7 +41,7 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
         _gameLoop.CardSelected(this);
 
-        _child = Instantiate(this.gameObject, this.transform.parent);
+        _child = Instantiate(this.gameObject, gameObject.transform.parent);
         this.GetComponent<Image>().raycastTarget = false;
         Destroy(_child.GetComponent<CardView>());
     }

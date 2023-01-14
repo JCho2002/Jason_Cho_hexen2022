@@ -64,7 +64,7 @@ internal class PushCard : MoveSet
             Vector2Int normalizedDir = new Vector2Int(Q, R);
             List<Position> directedLine = new MoveSetHelper(playerPosition, _board).Collect(normalizedDir).ValidPositions();
 
-            if (directedLine.Count <= 2)
+            if (directedLine.Count <= 1)
             {
                 _board.Take(pos);
                 continue;

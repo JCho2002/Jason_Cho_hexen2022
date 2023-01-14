@@ -31,7 +31,9 @@ public class BoardView : MonoBehaviour
         set
         {
             foreach (var position in _activePosition)
+            {
                 _hexTileViews[position].Deactivate();
+            }
 
             if (value == null)
                 _activePosition.Clear();

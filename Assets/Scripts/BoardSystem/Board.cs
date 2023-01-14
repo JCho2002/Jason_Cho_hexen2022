@@ -63,7 +63,7 @@ public class Board : MonoBehaviour
         => _pieces.TryGetValue(position, out piece);
 
     public bool IsValid(Position position)
-        => (-_radius <= position.Q && position.Q <= _radius) && (-_radius <= position.R && position.R <= _radius);
+        => ((-_radius <= position.Q && position.Q <= _radius) && (-_radius <= position.R && position.R <= _radius) && (-_radius <= position.S && position.S <= _radius) && (position.Q + position.R + position.S == 0));
 
 
     public bool Move(Position fromPosition, Position toPosition)

@@ -10,6 +10,7 @@ public struct Position
 
     public int Q => _q;
     public int R => _r;
+    public int S => _s;
 
     public Position(int q, int r)
     {
