@@ -20,12 +20,24 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     private GameObject _child;
     private CardPositioner _cardPositioner;
     private GameLoop _gameLoop;
+    private PlayingState _playingState;
+
+    public Vector3 StartingPos
+    {
+        get => _startingPos;
+        set
+        {
+            _startingPos = value;
+        }
+    }
 
     private void Awake()
     {
         _cardPositioner = FindObjectOfType<CardPositioner>();
         _startingPos = transform.position;
         _gameLoop = FindObjectOfType<GameLoop>();
+
+        _playingState = _gameLoop.StateMachine.States[States.Playing] as PlayingState;
     }
 
     public CardType Type => _type;
@@ -39,7 +51,7 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         if (_child != null)
             _child = null;
 
-        _gameLoop.CardSelected(this);
+        _playingState.CardSelected(this);
 
         _child = Instantiate(this.gameObject, gameObject.transform.parent);
         this.GetComponent<Image>().raycastTarget = false;
@@ -53,7 +65,7 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out var hit)) {
-            if (hit.transform.gameObject.layer == _TileMask && _gameLoop.CardLetGo(hit.transform.gameObject.GetComponent<HexTileView>(), this))
+            if (hit.transform.gameObject.layer == _TileMask && _playingState.CardLetGo(hit.transform.gameObject.GetComponent<HexTileView>(), this))
             {
                 DestroyClone();
                 _cardPositioner.DestroyCard(this.gameObject);
@@ -66,7 +78,7 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
     private void DestroyClone()
     {
-        _gameLoop.ClearCurrentCard();
+        _playingState.ClearCurrentCard();
         transform.position = _startingPos;
         Destroy(_child);
     }
