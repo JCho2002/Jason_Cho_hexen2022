@@ -135,6 +135,9 @@ public class PlayingState : State
 
     private bool OnCardDropped(PositionCardEventArgs e)
     {
+        if (_boardView == null)
+            return false;
+
         _boardView.ActivePosition = new List<Position>(0);
 
         var hoverPosition = e.Position;

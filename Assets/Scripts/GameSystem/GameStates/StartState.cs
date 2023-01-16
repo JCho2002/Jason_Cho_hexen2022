@@ -23,6 +23,14 @@ public class StartState : State
         SceneManager.UnloadSceneAsync("Start");
     }
 
+    public override void OnSuspend()
+    {
+        base.OnSuspend();
+
+        if (_startView != null)
+            _startView.PlayClicked -= OnPlayClicked;
+    }
+
     private void InitializeScene(AsyncOperation obj)
     {
         _startView = GameObject.FindObjectOfType<StartView>();
@@ -33,6 +41,6 @@ public class StartState : State
     private void OnPlayClicked(object sender, EventArgs e)
     {
         StateMachine.Push(States.Playing);
-        _startView.gameObject.SetActive(false);
+        //_startView.gameObject.SetActive(false);
     }
 }
