@@ -23,7 +23,6 @@ internal class MeteorCard : MoveSet
             .DownRight(1)
             .DownLeft(1)
             .ValidPositions();
-
         pos.Add(hoverPosition);
 
         return pos;
