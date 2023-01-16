@@ -32,6 +32,7 @@ public class StartState : State
 
     private void OnPlayClicked(object sender, EventArgs e)
     {
-        StateMachine.MoveTo(States.Playing);
+        StateMachine.Push(States.Playing);
+        _startView.gameObject.SetActive(false);
     }
 }

@@ -32,7 +32,8 @@ public class CardPositioner : MonoBehaviour
                 baseCards[i].transform.position = new Vector2(firstPos.position.x + space * i, firstPos.position.y);
                 baseCards[i].SetActive(true);
             }
-        } else
+        }
+        else
         {
             switch (length)
             {
@@ -49,9 +50,9 @@ public class CardPositioner : MonoBehaviour
                     baseCards[2].transform.position = new Vector2(centerPos.position.x + space, centerPos.position.y);
                     break;
                 case 4:
-                    baseCards[0].transform.position = new Vector2(centerPos.position.x - (3 * space) /2, centerPos.position.y);
+                    baseCards[0].transform.position = new Vector2(centerPos.position.x - (3 * space) / 2, centerPos.position.y);
                     baseCards[1].transform.position = new Vector2(centerPos.position.x - space / 2, centerPos.position.y);
-                    baseCards[2].transform.position = new Vector2(centerPos.position.x + space/ 2, centerPos.position.y);
+                    baseCards[2].transform.position = new Vector2(centerPos.position.x + space / 2, centerPos.position.y);
                     baseCards[3].transform.position = new Vector2(centerPos.position.x + (3 * space) / 2, centerPos.position.y);
                     break;
 
@@ -68,6 +69,11 @@ public class CardPositioner : MonoBehaviour
         if (baseCards.Count >= baseDeckSize)
             DisplayCard(baseDeckSize);
         else
+        {
             DisplayCard(baseCards.Count);
+
+            foreach (var c in baseCards)
+                c.GetComponent<CardView>().StartingPos = c.transform.position;
+        }
     }
 }
