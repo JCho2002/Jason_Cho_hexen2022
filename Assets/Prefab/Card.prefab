@@ -92,5 +92,5 @@ MonoBehaviour:
   _UIMask:
     serializedVersion: 2
     m_Bits: 32
-  _TileMask: 6
+  _tileMask: 6
   _type: 0

@@ -11,7 +11,7 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     private LayerMask _UIMask;
 
     [SerializeField]
-    private int _TileMask;
+    private int _tileMask;
 
     [SerializeField]
     private CardType _type;
@@ -65,7 +65,7 @@ public class CardView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out var hit)) {
-            if (hit.transform.gameObject.layer == _TileMask && _playingState.CardLetGo(hit.transform.gameObject.GetComponent<HexTileView>(), this))
+            if (hit.transform.gameObject.layer == _tileMask && _playingState.CardLetGo(hit.transform.gameObject.GetComponent<HexTileView>(), this))
             {
                 DestroyClone();
                 _cardPositioner.DestroyCard(this.gameObject);
